@@ -16,6 +16,7 @@ Regra da aula:
 # BLOCO 1: criar DataFrame e inspecionar estrutura
 # -------------------------------------------------
 import pandas as pd 
+
 dados_vendas = {
     "mes": ["Jan", "Jan", "Fev", "Fev", "Mar", "Mar"],
     "filial": ["Centro", "Norte", "Centro", "Norte", "Centro", "Norte"],
@@ -33,20 +34,20 @@ df_vendas.shape
 # d) Mostre os tipos de dados das colunas
 df_vendas.dtypes
 
+
 # -------------------------------------------------
 # BLOCO 2: selecionar colunas e linhas
 # -------------------------------------------------
 
 # Exercicio 2:
 # a) Mostre apenas as colunas "mes" e "vendas"
-df_vendas.loc[:, {"mes", "vendas"}]
-# b) Mostre somente a primeira linha
-df_vendas.head(1)
-df_vendas[0:0,]
-# c) Mostre as linhas de indice 2 ate 4
-df_vendas.loc[2:4,]
+df_vendas[["mes", "vendas"]]
 
-# RESOLUCAO: complete aqui
+# b) Mostre somente a primeira linha
+df_vendas.iloc[0]
+
+# c) Mostre as linhas de indice 2 ate 4
+df_vendas.iloc[2:5]
 
 
 # -------------------------------------------------
@@ -55,15 +56,14 @@ df_vendas.loc[2:4,]
 
 # Exercicio 3:
 # a) Filtre vendas acima de 12000
-filtro = df_vendas["vendas"] > 12000
-df_vendas.loc[filtro]
+df_vendas[df_vendas["vendas"] > 12000]
+
 # b) Filtre apenas a filial "Centro"
-filtro = df_vendas["filial"] == "Centro"
-df_vendas.loc[filtro]
+df_vendas[df_vendas["filial"] == "Centro"]
+
 # c) Filtre vendas acima de 11000 na filial "Norte"
-filtro = (df_vendas["vendas"] >= 11000) & (df_vendas["filial"] == "Norte")
-df_vendas.loc[filtro]
-# RESOLUCAO: complete aqui
+df_vendas[(df_vendas["vendas"] > 11000) & 
+          (df_vendas["filial"] == "Norte")]
 
 
 # -------------------------------------------------
@@ -73,11 +73,12 @@ df_vendas.loc[filtro]
 # Exercicio 4:
 # a) Crie a coluna "ticket_medio" = vendas / clientes
 df_vendas["ticket_medio"] = df_vendas["vendas"] / df_vendas["clientes"]
+
 # b) Crie a coluna "meta_batida" com True para vendas >= 13000
 df_vendas["meta_batida"] = df_vendas["vendas"] >= 13000
+
 # c) Mostre apenas "filial", "mes", "ticket_medio", "meta_batida"
-df_vendas.loc[:, ["filal","mes","ticket_medio","meta_batida"]]
-# RESOLUCAO: complete aqui
+df_vendas[["filial", "mes", "ticket_medio", "meta_batida"]]
 
 
 # -------------------------------------------------
@@ -86,13 +87,13 @@ df_vendas.loc[:, ["filal","mes","ticket_medio","meta_batida"]]
 
 # Exercicio 5:
 # a) Calcule total de vendas por filial
-df_vendas.loc[:, ["vendas"]].sum()
-df_vendas.groupby("filal")["vendas"].sum()
+df_vendas.groupby("filial")["vendas"].sum()
+
 # b) Calcule media de clientes por mes
 df_vendas.groupby("mes")["clientes"].mean()
+
 # c) Descubra a filial com maior total de vendas
-df_vendas.groupby("filal")["vendas"].max()
-# RESOLUCAO: complete aqui
+df_vendas.groupby("filial")["vendas"].sum().idxmax()
 
 
 # -------------------------------------------------
@@ -101,10 +102,13 @@ df_vendas.groupby("filal")["vendas"].max()
 
 # Exercicio 6:
 # a) Ordene df_vendas por "vendas" em ordem decrescente
-# b) Pegue os 3 maiores resultados de vendas
-# c) Mostre um ranking com "filial", "mes", "vendas"
+df_ordenado = df_vendas.sort_values(by="vendas", ascending=False)
 
-# RESOLUCAO: complete aqui
+# b) Pegue os 3 maiores resultados de vendas
+df_ordenado.head(3)
+
+# c) Mostre um ranking com "filial", "mes", "vendas"
+df_ordenado[["filial", "mes", "vendas"]]
 
 
 # -------------------------------------------------
@@ -116,14 +120,18 @@ df_vendas.groupby("filal")["vendas"].max()
 #    - total_vendas
 #    - media_ticket_medio
 #    - total_clientes
+resumo = df_vendas.groupby("filial").agg(
+    total_vendas=("vendas", "sum"),
+    media_ticket_medio=("ticket_medio", "mean"),
+    total_clientes=("clientes", "sum")
+)
+
 # 2) Ordene o resumo por total_vendas (desc)
+resumo = resumo.sort_values(by="total_vendas", ascending=False)
+
 # 3) Exiba qual filial teve melhor desempenho geral
-
-# RESOLUCAO: complete aqui
-
-
-
-
+resumo
+resumo.index[0]
 
 
 # ===========================================================
@@ -136,94 +144,58 @@ dados_list_dict = [{
     "Column C":[7, 8, 9]
 }]
 
-
 # -----------------------------------------------------------
 # EXERCÍCIO 1 – Explorando a estrutura
 # -----------------------------------------------------------
 
-# 1. Qual é o tipo de dados_list_dict?
 type(dados_list_dict)
-# 2. Qual é o tipo do primeiro elemento?
-dic= dados_list_dict[0]
-type(dic)
-# 3. Como acessar a lista da "Column A"?
-dic["Column A"]
-# 4. Como acessar o segundo elemento da "Column C"?
-dic["Column C"]
-
-# RESPONDA AQUI:
-
+type(dados_list_dict[0])
+dados_list_dict[0]["Column A"]
+dados_list_dict[0]["Column C"][1]
 
 
 # -----------------------------------------------------------
 # EXERCÍCIO 2 – Convertendo para DataFrame
 # -----------------------------------------------------------
 
-# 1. Converta dados_list_dict[0] em um DataFrame chamado df1
 df1 = pd.DataFrame(dados_list_dict[0])
-# 2. Mostre:
-#    - shape
-#    - tipos das colunas
-# 3. Calcule:
-#    - soma de cada coluna
-#    - média de cada coluna
 
-# RESOLVA AQUI:
-
+df1.shape
+df1.dtypes
+df1.sum()
+df1.mean()
 
 
 # -----------------------------------------------------------
 # EXERCÍCIO 3 – Criando novas colunas
 # -----------------------------------------------------------
 
-# No df1:
-# 1. Crie coluna "Total" = soma das colunas
-# 2. Crie coluna "Media" = média por linha
-# 3. Filtre linhas onde Total > 10
-
-# RESOLVA AQUI:
-
+df1["Total"] = df1.sum(axis=1)
+df1["Media"] = df1[["Column A","Column B","Column C"]].mean(axis=1)
+df1[df1["Total"] > 10]
 
 
 # -----------------------------------------------------------
 # EXERCÍCIO 4 – Conversões estruturais
 # -----------------------------------------------------------
 
-# 1. Converta df1 para:
-#    - lista de dicionários [ {linha1}, {linha2}, {linha3} ]
-#    - dicionário de listas { coluna1: [valores], coluna2: [valores] }
-# Dica:
-# orient="records":
-#   Cada elemento representa uma linha.
-#   Estrutura ideal para APIs e JSON.
-
-# orient="list":
-#   Cada chave representa uma coluna.
-#   Estrutura colunar, útil para reconstruir DataFrame.
-
-
-# RESOLVA AQUI:
-df1.to_dict()
 df1.to_dict(orient="records")
+df1.to_dict(orient="list")
+
 
 # -----------------------------------------------------------
 # EXERCÍCIO 5 – Trabalhando com lista
 # -----------------------------------------------------------
 
-# 1. Transforme a coluna "Column A" em uma lista chamada lista_a.
-lista = df1["column A"].to_list()
-# 2. Multiplique cada elemento da lista por 10.
-[]
-# 3. Crie uma nova coluna chamada "Column A x10" com essa nova lista.
-
-# RESOLVA AQUI:
-
+lista_a = df1["Column A"].to_list()
+lista_a_x10 = [x * 10 for x in lista_a]
+df1["Column A x10"] = lista_a_x10
 
 
 # ===========================================================
 # BASE DE DADOS
 # ===========================================================
-import pandas as pd
+
 dados = [
     {"id_pais": 0, "nome_pais": "Brasil", "id_produto": 101, "descricao": "Produto A",
      "tipo_operacao": "Exportação", "tipo_periodo": "Mensal", "periodo": "2023-01", "valor": 5000},
@@ -241,137 +213,79 @@ dados = [
      "tipo_operacao": "Exportação", "tipo_periodo": "Mensal", "periodo": "2023-03", "valor": 7000},
 ]
 
-
-# ===========================================================
-# PARTE 1 – EXPLORAÇÃO INICIAL
-# ===========================================================
-
-# Exercício 1
-# 1. Qual o tipo da variável dados?
-pd.DataFrame(dados)
-# 2. Quantos registros existem?
-
-# 3. Quais são as chaves do primeiro dicionário?
-# 4. Liste todos os países existentes (sem repetição).
-
-# RESOLVA AQUI:
-
-
-
 # ===========================================================
 # PARTE 2 – CONVERSÃO PARA DATAFRAME
 # ===========================================================
 
-# Exercício 2
-# 1. Converta dados para DataFrame chamado df
-# 2. Mostre shape, tipos e primeiras linhas
-# 3. Converta a coluna periodo para datetime
+df = pd.DataFrame(dados)
+df.shape
+df.dtypes
+df.head()
 
-# RESOLVA AQUI:
-
+df["periodo"] = pd.to_datetime(df["periodo"])
 
 
 # ===========================================================
-# PARTE 3 – FILTROS E ORDENAÇÃO
+# PARTE 3 – FILTROS
 # ===========================================================
 
-# Exercício 3 – Filtros
-# 1. Filtre apenas Brasil
-# 2. Filtre apenas Produto A
-# 3. Filtre valor > 4000
-# 4. Combine Brasil + Produto A
-
-# RESOLVA AQUI:
-
-
-# Exercício 4 – Ordenação
-# 1. Ordene por valor crescente
-# 2. Ordene por valor decrescente
-# 3. Ordene por periodo e depois por valor
-
-# RESOLVA AQUI:
-
+df[df["nome_pais"] == "Brasil"]
+df[df["descricao"] == "Produto A"]
+df[df["valor"] > 4000]
+df[(df["nome_pais"] == "Brasil") & (df["descricao"] == "Produto A")]
 
 
 # ===========================================================
 # PARTE 4 – AGREGAÇÕES
 # ===========================================================
 
-# Exercício 5 – GroupBy Simples
-# 1. Total exportado por país
-# 2. Total exportado por produto
-# 3. Média por país
-# 4. Quantidade de operações por país
+df.groupby("nome_pais")["valor"].sum()
+df.groupby("descricao")["valor"].sum()
+df.groupby("nome_pais")["valor"].mean()
+df.groupby("nome_pais")["valor"].count()
 
-# RESOLVA AQUI:
-
-
-# Exercício 6 – GroupBy Múltiplo
-# Agrupe por nome_pais e descricao
-# Calcule soma, média e contagem
-
-# Explique em comentário o que essa tabela representa
-
-# RESOLVA AQUI:
-
+df.groupby(["nome_pais","descricao"])["valor"].agg(["sum","mean","count"])
 
 
 # ===========================================================
 # PARTE 5 – PIVOT TABLE
 # ===========================================================
 
-# Exercício 7 – Pivot por Produto
-# Linhas: periodo
-# Colunas: descricao
-# Valores: soma de valor
+pivot_produto = df.pivot_table(
+    index="periodo",
+    columns="descricao",
+    values="valor",
+    aggfunc="sum"
+)
 
-# Responda:
-# 1. Qual produto vendeu mais?
-# 2. Qual mês teve maior valor total?
-# 3. Existe mês sem venda?
+pivot_produto
 
-# RESOLVA AQUI:
+pivot_pais = df.pivot_table(
+    index="periodo",
+    columns="nome_pais",
+    values="valor",
+    aggfunc="sum"
+)
 
-
-# Exercício 8 – Pivot por País
-# Linhas: periodo
-# Colunas: nome_pais
-# Valores: soma de valor
-
-# Explique o que podemos interpretar dessa tabela
-
-# RESOLVA AQUI:
-
+pivot_pais
 
 
 # ===========================================================
 # PARTE 6 – FEATURE ENGINEERING
 # ===========================================================
 
-# Exercício 9
-# 1. Extraia ano e mês da coluna periodo
-# 2. Crie coluna valor_mil (valor / 1000)
-# 3. Calcule crescimento percentual por produto mês a mês
+df["ano"] = df["periodo"].dt.year
+df["mes"] = df["periodo"].dt.month
+df["valor_mil"] = df["valor"] / 1000
 
-# RESOLVA AQUI:
-
+df = df.sort_values(["descricao","periodo"])
+df["crescimento_pct"] = df.groupby("descricao")["valor"].pct_change()
 
 
 # ===========================================================
 # PARTE 7 – QUALIDADE DE DADOS
 # ===========================================================
 
-# Exercício 10
-# 1. Verifique valores nulos
-# 2. Verifique valores negativos
-# 3. Verifique duplicatas
-
-# RESOLVA AQUI:
-
-
-
-
-
-
-
-
+df.isnull().sum()
+(df["valor"] < 0).sum()
+df.duplicated().sum()
