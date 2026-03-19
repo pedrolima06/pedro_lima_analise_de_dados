@@ -21,7 +21,7 @@ df['Survived'].sum()
 
 # Questão 4: Calcular a média da idade
 
-df['Age'].median()
+df['Age'].mean()
 
 # Quantos Homens Sobreviveram?
 
